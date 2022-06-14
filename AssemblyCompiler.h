@@ -8,9 +8,20 @@
 #include<string>
 #include<cstring>
 #include<vector>
+#include<set>
+
+struct Instruction{
+
+	uint8_t Operand;
+	uint8_t Argument1;
+	uint8_t Argument2;
+	uint8_t Result;
+};
+
 
 class AssemblyCompiler{
 public:
+	
 	AssemblyCompiler(std::string);
 	//create binary file and initialize its content with binCode
 	void binFileInit();
@@ -43,21 +54,24 @@ private:
 
     //keep binary file after parsing
 	std::vector<uint8_t> binCode;
-	std::set<std::string> Operand{
+	std::set<std::string> ArithmeticOperand{
 		"ADD",
 		"SUB",
 		"AND",
 		"OR",
 		"NOT",
-		"XOR",
+		"XOR"
+	};
+
+	std::set<std::string> ConditionalOperand{
 		"JE",
 		"JNE",
 		"JL",
 		"JLE",
 		"JG",
-		"JGE",
-		"MOV"
-	}
+		"JGE"
+	};	
+
 
 	//map for constant definitions
 	std::map<std::string, int> Constant;
@@ -67,23 +81,28 @@ private:
 	int Count=0;
 
 	//parse assembly file
-	void parseAssemblyLine(std::&string);
+	void parseAssemblyLine(std::string&);
 	//parse for specific types of lines
-	void parseArithmeticInstruction(std::&string);
-	void parseConditionalInstruction(std::&string);
-	void parseConstant(std::&string);
-	void parseLabel(std::&string);
-	void parseMovInstruction(std::&string);
+	void parseArithmeticInstruction(std::string&);
+	void parseConditionalInstruction(std::string&);
+	void parseLabel(std::string&);
+	void parseMovInstruction(std::string&);
 
 
-	std::string readOperand(std::&string)
+	void checkArgument1(Instruction&, std::string&);
+	void checkArgument2(Instruction&, std::string&);
+
+
+	std::string getFirstWord(std::string&);
+	void removeExtraWhitespaces(std::string&);
 
 	//check the type of instruction
-	bool isLabel(std::&string);
-	bool isConstant(std::&string);
-	bool isArithmetic(std::&string);
-	bool isConditional(std::string);
-	bool isMov(std::&string)
+	bool isLabel(std::string&);
+	bool isConstant(std::string&);
+	bool isArithmetic(std::string&);
+	bool isConditional(std::string&);
+	bool isMov(std::string&);
+	bool is_int(std::string&);
 
 
 	std::map<std::string, int> Register{
@@ -96,7 +115,7 @@ private:
 		{"Counter", Counter},
 		{"In",      In},
 		{"Out",     Out}
-	}
+	};
 
 	std::map<std::string, int> Operands{
 		{"ADD",  opADD},
@@ -111,7 +130,8 @@ private:
 		{"JLE",  opJLE},
 		{"JG",   opJG}, 
 		{"JGE",  opJGE}
-	}
-}
+	};
+
+};
 
 #endif
