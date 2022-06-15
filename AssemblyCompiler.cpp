@@ -5,7 +5,7 @@
 #include"AssemblyCompiler.h"
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
-	std::ifstream in(fileName);
+    std::ifstream in(fileName);
     std::string line;
     std::vector<std::string> lines;
 
@@ -14,7 +14,7 @@ AssemblyCompiler::AssemblyCompiler(std::string& fileName){
             if (!(line.empty() || line.find_first_not_of(' ')==std::string::npos)){
                 const auto lineBegin=line.find_first_not_of(' ');
                 const auto lineEnd=line.find_last_not_of(' ');
-    			const auto lineRange=lineEnd-lineBegin+1;
+    	        const auto lineRange=lineEnd-lineBegin+1;
                 lines.push_back(line.substr(lineBegin,lineRange));
             }
         }
@@ -93,7 +93,7 @@ void AssemblyCompiler::parseArithmeticInstruction(std::string&str){
 	Instruction instr;
     
 
-    //check instruction operand
+        //check instruction operand
 	decltype(str.size()) pos1=0;
 	while(!isspace(str[pos1])){
 		pos1++;
@@ -113,7 +113,7 @@ void AssemblyCompiler::parseArithmeticInstruction(std::string&str){
 	checkArgument1(instr,arg1);
 
 
-    //check Argument2
+        //check Argument2
 	decltype(str.size()) pos3=pos2+1;
 	while(!isspace(str[pos3])){
 		pos3++;
