@@ -131,7 +131,7 @@ private:
 
 
     //Functions that help parsing Instruction components
-    std::string getFirstWord(std::string&); //get the first word of instruction
+        std::string getFirstWord(std::string&); //get the first word of instruction
 	void checkArgument1(Instruction&, std::string&); //parse the first argument
 	void checkArgument2(Instruction&, std::string&); //parse the second argument
 	void checkDestination(Instruction&, std::string&); //parse destination
