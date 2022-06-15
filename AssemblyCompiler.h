@@ -11,7 +11,6 @@
 #include<set>
 
 struct Instruction{
-
 	uint8_t Operand;
 	uint8_t Argument1;
 	uint8_t Argument2;
@@ -21,12 +20,12 @@ struct Instruction{
 
 class AssemblyCompiler{
 public:
-	
-	AssemblyCompiler(std::string);
-	//create binary file and initialize its content with binCode
-	void binFileInit();
+
+	AssemblyCompiler(std::string&);
+	void binFileInit(); //create binary file and initialize its content with binCode
 	
 private:
+
 	//Opcodes for operations
 	static const int opADD=0;
 	static const int opSUB=1;
@@ -41,6 +40,7 @@ private:
 	static const int opJG=36;
 	static const int opJGE=37;
 
+
 	//Registers
 	static const int R0=0;
 	static const int R1=1;
@@ -52,71 +52,8 @@ private:
 	static const int In=7;
 	static const int Out=7;
 
-    //keep binary file after parsing
-	std::vector<uint8_t> binCode;
-	std::set<std::string> ArithmeticOperand{
-		"ADD",
-		"SUB",
-		"AND",
-		"OR",
-		"NOT",
-		"XOR"
-	};
 
-	std::set<std::string> ConditionalOperand{
-		"JE",
-		"JNE",
-		"JL",
-		"JLE",
-		"JG",
-		"JGE"
-	};	
-
-
-	//map for constant definitions
-	std::map<std::string, int> Constant;
-	std::map<std::string, int> Label;
-
-    //Counter for instructions;
-	int Count=0;
-
-	//parse assembly file
-	void parseAssemblyLine(std::string&);
-	//parse for specific types of lines
-	void parseArithmeticInstruction(std::string&);
-	void parseConditionalInstruction(std::string&);
-	void parseLabel(std::string&);
-	void parseMovInstruction(std::string&);
-
-
-	void checkArgument1(Instruction&, std::string&);
-	void checkArgument2(Instruction&, std::string&);
-
-
-	std::string getFirstWord(std::string&);
-	void removeExtraWhitespaces(std::string&);
-
-	//check the type of instruction
-	bool isLabel(std::string&);
-	bool isConstant(std::string&);
-	bool isArithmetic(std::string&);
-	bool isConditional(std::string&);
-	bool isMov(std::string&);
-	bool is_int(std::string&);
-
-
-	std::map<std::string, int> Register{
-		{"R0",      R0},
-		{"R1",      R1},
-		{"R2",      R2},
-		{"R3",      R3},
-		{"R4",      R4},
-		{"R5",      R5},
-		{"Counter", Counter},
-		{"In",      In},
-		{"Out",     Out}
-	};
-
+	//Operand Values
 	std::map<std::string, int> Operands{
 		{"ADD",  opADD},
 		{"SUB",  opSUB},
@@ -132,6 +69,76 @@ private:
 		{"JGE",  opJGE}
 	};
 
+
+	//Register Values
+	std::map<std::string, int> Register{
+		{"R0",      R0},
+		{"R1",      R1},
+		{"R2",      R2},
+		{"R3",      R3},
+		{"R4",      R4},
+		{"R5",      R5},
+		{"Counter", Counter},
+		{"In",      In},
+		{"Out",     Out}
+	};
+
+
+	//Set of all Arithmetic Instructions
+	std::set<std::string> ArithmeticOperand{
+		"ADD",
+		"SUB",
+		"AND",
+		"OR",
+		"NOT",
+		"XOR"
+	};
+
+
+	//Set of all Conditional Instructions
+	std::set<std::string> ConditionalOperand{
+		"JE",
+		"JNE",
+		"JL",
+		"JLE",
+		"JG",
+		"JGE"
+	};
+
+
+	std::vector<uint8_t> binCode; //keep binary file after parsing
+	std::map<std::string, int> Constant; //map for constant definitions
+	std::map<std::string, int> Label; //map for labels
+	unsigned int Count=0; //Counter for instructions;
+
+
+
+	//Functions to parse Assembly file
+	void parseAssemblyLine(std::string&); //parse assembly file
+	void parseArithmeticInstruction(std::string&); //parse arithmetic instructions
+	void parseConditionalInstruction(std::string&); //parse conditional instructions
+	void parseLabel(std::string&); //parse labels
+	void parseMovInstruction(std::string&); //parse MOV instructions
+
+
+	//check the type of instruction
+	bool isLabel(std::string&);
+	bool isConstant(std::string&);
+	bool isArithmetic(std::string&);
+	bool isConditional(std::string&);
+	bool isMov(std::string&);
+	bool is_int(std::string&);
+
+
+    //Functions that help parsing Instruction components
+    std::string getFirstWord(std::string&); //get the first word of instruction
+	void checkArgument1(Instruction&, std::string&); //parse the first argument
+	void checkArgument2(Instruction&, std::string&); //parse the second argument
+	void checkDestination(Instruction&, std::string&); //parse destination
+	
+
+    //Helper function
+	void removeExtraWhitespaces(std::string&); //removes extra whitespaces
 };
 
 #endif
