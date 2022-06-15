@@ -1,5 +1,7 @@
 #include<algorithm>
 #include<regex>
+#include<cctype>
+#include<utility>
 #include"AssemblyCompiler.h"
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
@@ -13,25 +15,24 @@ AssemblyCompiler::AssemblyCompiler(std::string& fileName){
                 const auto lineBegin=line.find_first_not_of(' ');
                 const auto lineEnd=line.find_last_not_of(' ');
     			const auto lineRange=lineEnd-lineBegin+1;
-                lines.push_back(line.substr(lineBegin,lineRange););
+                lines.push_back(line.substr(lineBegin,lineRange));
             }
         }
     }
     else{
-        throw std::runtime_error("Failed To Open Input Files");
+        throw std::runtime_error("Failed To Open Input File");
     }
 
     in.close();
 
-    int count=(int)lines.size();
-    for(int i=0; i<count; i++){
-    	std::transform(lines[i].begin(),lines[i].end(),lines[i].begin(),::toupper);
+    for(auto i=0; i<lines.size(); i++){
+    	std::transform(lines[i].begin(),lines[i].end(),lines[i].begin(),::toupper); //assembly is case-insensitive
     	parseAssemblyLine(lines[i]);
     }
 }
 
-void AssemblyCompiler::parseAssemblyLine(std::string&str){
-	//check if the string contains a whitespace
+void AssemblyCompiler::parseAssemblyLine(std::string& str){
+	//check if string contains a whitespace
 	//If it doesn't it should be a label or invalid instruction
 	removeExtraWhitespaces(str);
 	if(str.find(' ')!=std::string::npos){
@@ -45,13 +46,15 @@ void AssemblyCompiler::parseAssemblyLine(std::string&str){
 	std::string op=getFirstWord(str);
 	if(isLabel(op)){
 		parseLabel(op);
-		parseAssemblyLine(str.substr(len+1));
+		decltype(op.size()) len=op.size();
+		std::string newstr=str.substr(len+1);
+		parseAssemblyLine(newstr);
 	}
 	else if(isConstant(str)){
 
 	}
 	else if(isArithmetic(str)){
-		parseArithmeticInstruction();
+		parseArithmeticInstruction(str);
 		Count++;
 	}
 	else if(isConditional(str)){
@@ -70,7 +73,7 @@ void AssemblyCompiler::parseAssemblyLine(std::string&str){
 
 std::string AssemblyCompiler::getFirstWord(std::string&str){
 	std::string op;
-	int pos=0;
+	decltype(op.size()) pos=0;
 	while(str[pos]!=' '){
 		pos++;
 	}
@@ -84,36 +87,52 @@ std::string AssemblyCompiler::getFirstWord(std::string&str){
 }
 
 void AssemblyCompiler::parseArithmeticInstruction(std::string&str){
-	Instruction instr;
 
-	int pos1=0;
-	while(str[pos1]!=whitespace){
+	//For every line get 4 Components of instruction
+	//Add them to bincode
+	Instruction instr;
+    
+
+    //check instruction operand
+	decltype(str.size()) pos1=0;
+	while(!isspace(str[pos1])){
 		pos1++;
 	}
-
-	instr.Operand=ArithmeticOperand[str.substr(0,pos1)];
+	instr.Operand=Operands[str.substr(0,pos1)];
 
 
 	//check Argument1
-	int pos2=pos1+1;
-	while(str[i]!=','){
+	decltype(str.size()) pos2=pos1+1;
+	while(!isspace(str[pos2])){
 		pos2++;
 	}
 	std::string arg1=str.substr(pos2,pos2-1-pos1);
+	if(arg1.empty()){
+		throw std::invalid_argument("Invalid Instruction Format: Argument1 is missing");
+	}
 	checkArgument1(instr,arg1);
 
 
     //check Argument2
-	int pos3=pos2+1;
-	while(str[i]!=','){
+	decltype(str.size()) pos3=pos2+1;
+	while(!isspace(str[pos3])){
 		pos3++;
 	}
+	if(arg2.empty()){
+		throw std::invalid_argument("Invalid Instruction Format: Argument2 is missing");
+	}
 	std::string arg2=str.substr(pos3,pos3-1-pos2);
-	checkArgument1(instr,arg2);
+	checkArgument2(instr,arg2);
+
 
 	//check Destination
+	decltype(str.size()) pos4=pos3+1;
+	while(!isspace(str[pos4])){
+		pos4++;
+	}
+	std::string dest=str.substr(pos4,pos4-1-pos3);
+	checkDestination(instr,dest);
 
-	
 }
 
 void AssemblyCompiler::parseConditionalInstruction(std::string&str){
@@ -122,7 +141,7 @@ void AssemblyCompiler::parseConditionalInstruction(std::string&str){
 
 
 void AssemblyCompiler::parseLabel(std::string&str){
-	int len=(int)str.size();
+	decltype(str.size()) len=str.size();
 	std::string op=str.substr(0,len-1);
 	Label[op]=Count;
 }
@@ -132,8 +151,8 @@ void AssemblyCompiler::parseMovInstruction(std::string&str){
 }
 
 bool AssemblyCompiler::isLabel(std::string&str){
-	int len=(int)str.size();
-	if(str[len-1]==":"){
+	decltype(str.size()) len=str.size();
+	if(str[len-1]==':'){
 		return true;
 	}
 	else{
@@ -144,27 +163,29 @@ bool AssemblyCompiler::isLabel(std::string&str){
 //Constant is Supported only for intgers
 bool AssemblyCompiler::isConstant(std::string&str){
 
-	int pos=0;
-	while(str[pos]!=whitespace){
+	decltype(str.size()) pos=0;
+	while(!isspace(str[pos])){
 		pos++;
 	}
 	if(str.substr(pos+1,3)!="equ"){
 		return false;
 	}
 	else{
-		if(is_int(str.substr(pos+4))){
+		std::string num=str.substr(pos+4);
+		if(isInt(num)){
 			int num=stoi(str.substr(pos+4));
 			Constant[str.substr(0,pos)]=num;
 		}
 		else{
-			throw::invalid_argument("Invalid Integer Type");
+			throw std::invalid_argument("Invalid Integer Type");
 		}
 	}
+	return false;
 }
 
 bool AssemblyCompiler::isArithmetic(std::string&str){
-	int pos=0;
-	while(str[i]!=whitespace){
+	decltype(str.size()) pos=0;
+	while(!isspace(str[pos])){
 		pos++;
 	}
 
@@ -178,8 +199,8 @@ bool AssemblyCompiler::isArithmetic(std::string&str){
 }
 
 bool AssemblyCompiler::isConditional(std::string&str){
-	int pos=0;
-	while(str[i]!=whitespace){
+	decltype(str.size()) pos=0;
+	while(!isspace(str[pos])){
 		pos++;
 	}
 
@@ -194,8 +215,8 @@ bool AssemblyCompiler::isConditional(std::string&str){
 }
 
 bool AssemblyCompiler::isMov(std::string&str){
-	int pos=0;
-	while(str[i]!=whitespace){
+	decltype(str.size()) pos=0;
+	while(!isspace(str[pos])){
 		pos++;
 	}
 
@@ -210,30 +231,30 @@ bool AssemblyCompiler::isMov(std::string&str){
 
 void AssemblyCompiler::removeExtraWhitespaces(std::string&str){
 	std::string output;
-	std::unique_copy(str.begin(),str.end(),back_insert_iterator<string>(output),
-	            [](char a, char b){ return isspace(a) && isspace(b)});
+	std::unique_copy(str.begin(),str.end(),std::back_insert_iterator<std::string>(output),
+	            [](char a, char b){ return isspace(a) && isspace(b);});
 	str=output;
 }
 
 //check if string is number with regex
 //does not accept leading zeros
-bool is_int(std::string&str){
+bool isInt(std::string&str){
 
-    static constexpr auto max_digits=std::numeric_limits<int>::digits10 ;
-    static const std::string ub=std::to_string(max_digits-1) ;
-    static const std::regex int_re("^\\s*([+-]?[1-9]\\d{0,"+ub+"}|0)\\s*$");
+    constexpr auto max_digits=std::numeric_limits<int>::digits10 ;
+    const std::string ub=std::to_string(max_digits-1) ;
+    const std::regex int_re("^\\s*([+-]?[1-9]\\d{0,"+ub+"}|0)\\s*$");
 
     return std::regex_match(str,int_re) ;
 }
 
-void AssemblyCompiler::checkArgument1(Instruction& instr, const std::string arg1){
+void AssemblyCompiler::checkArgument1(Instruction& instr, std::string& arg1){
 	if(arg1[0]=='R'){
 		if((int)arg1.size()>3){
 			throw std::invalid_argument("Invalid Register");
 			if(arg1[1]<'0' || arg1[1]>'5'){
 				throw std::invalid_argument("Invalid Register");
 			}
-			else if((int)arg1.size()==3 && arg1[2]!=whitespace){
+			else if((int)arg1.size()==3 && arg1[2]!=' '){
 				throw std::invalid_argument("Invalid Register");
 			}
 			else{
@@ -241,29 +262,29 @@ void AssemblyCompiler::checkArgument1(Instruction& instr, const std::string arg1
 			}
 		}
 		else{
-			throw insvalid_argument("Invalid Register");
+			throw std::invalid_argument("Invalid Register");
 		}
 	}
 	else{
-		if(is_int(arg1) && stoi(arg1)<256 && stoi(arg1)>=0){
+		if(isInt(arg1) && stoi(arg1)<256 && stoi(arg1)>=0){
 			instr.Argument1=stoi(arg1);
 			instr.Operand|=0x80;
 		}
 		else{
-			throw std::invalid_argumen("Invalid Immediate value");
+			throw std::invalid_argument("Invalid Immediate value");
 		}
 
 	}
 }
 
-void AssemblyCompiler::checkArgument2(Instruction& instr, const std::string arg2){
+void AssemblyCompiler::checkArgument2(Instruction& instr, std::string& arg2){
 	if(arg2[0]=='R'){
 		if((int)arg2.size()>3){
 			throw std::invalid_argument("Invalid Register");
 			if(arg2[1]<'0' || arg2[1]>'5'){
 				throw std::invalid_argument("Invalid Register");
 			}
-			else if((int)arg2.size()==3 && arg2[2]!=whitespace){
+			else if((int)arg2.size()==3 && !isspace(arg2[2])){
 				throw std::invalid_argument("Invalid Register");
 			}
 			else{
@@ -271,18 +292,20 @@ void AssemblyCompiler::checkArgument2(Instruction& instr, const std::string arg2
 			}
 		}
 		else{
-			throw insvalid_argument("Invalid Register");
+			throw std::invalid_argument("Invalid Register");
 		}
 	}
 	else{
-		if(is_int(arg2) && stoi(arg2)<256 && stoi(arg2)>=0){
+		if(isInt(arg2) && stoi(arg2)<256 && stoi(arg2)>=0){
 			instr.Argument2=stoi(arg2);
 			instr.Operand|=0x40;
 		}
 		else{
-			throw std::invalid_argumen("Invalid Immediate value");
+			throw std::invalid_argument("Invalid Immediate value");
 		}
-
 	}
 }
 
+std::pair<int,int> AssemblyCompiler::checkDestination(Instruction& instr, std::string& dest){
+	
+}
