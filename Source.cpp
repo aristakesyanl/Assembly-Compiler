@@ -11,5 +11,6 @@ int main(int argc, char* argv[])
 		std::string str(argv[1]);
 		AssemblyCompiler compiler(str);
 		compiler.binFileInit();
+		return 0;
 	}
 }
