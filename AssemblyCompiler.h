@@ -25,6 +25,9 @@ public:
 	void binFileInit(); //create binary file and initialize its content with binCode
 	
 private:
+    
+        //RAM size is 2MB
+	static const int RAM=4*65536;
 
 	//Opcodes for operations
 	static const int opADD=0;
@@ -106,15 +109,13 @@ private:
 	};
 
 
-	std::vector<uint8_t> binCode; //keep binary file after parsing
+	std::vector<uint8_t> bincode; //keep binary file after parsing
 	std::map<std::string, int> Constant; //map for constant definitions
 	std::map<std::string, int> Label; //map for labels
 	unsigned int Count=0; //Counter for instructions;
-
-
-
+	
 	//Functions to parse Assembly file
-	void parseAssemblyLine(std::string&); //parse assembly file
+	void parseAssemblyLine(std::string&);
 	void parseArithmeticInstruction(std::string&); //parse arithmetic instructions
 	void parseConditionalInstruction(std::string&); //parse conditional instructions
 	void parseLabel(std::string&); //parse labels
@@ -127,17 +128,18 @@ private:
 	bool isArithmetic(std::string&);
 	bool isConditional(std::string&);
 	bool isMov(std::string&);
-	bool is_int(std::string&);
+	bool isInt(std::string&);
 
 
-    //Functions that help parsing Instruction components
+        //Functions that help parsing Instruction components
         std::string getFirstWord(std::string&); //get the first word of instruction
 	void checkArgument1(Instruction&, std::string&); //parse the first argument
 	void checkArgument2(Instruction&, std::string&); //parse the second argument
 	void checkDestination(Instruction&, std::string&); //parse destination
-	
+	void addBinaryCode(Instruction&);
 
-    //Helper function
+
+        //Helper function
 	void removeExtraWhitespaces(std::string&); //removes extra whitespaces
 };
 
