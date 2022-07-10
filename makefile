@@ -1,4 +1,3 @@
-
 CC=g++
 CFLAGS=-c -Wall
 LDFLAGS=
