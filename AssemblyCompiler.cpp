@@ -37,6 +37,17 @@ AssemblyCompiler::AssemblyCompiler(std::string& fileName){
     }
 }
 
+//creates a "code.bin" executable file
+void AssemblyCompiler::binFileInit(){
+
+	std::ofstream file("code.bin", std::ios::binary);
+	for(decltype(bincode.size()) i=0; i<bincode.size();i++){
+		file.write((char*)&bincode[i],sizeof(uint8_t));
+	}
+
+	file.close();
+}
+
 void AssemblyCompiler::parseAssemblyLine(std::string& str){
 	//check if string contains a whitespace
 	//If it doesn't it should be a label or invalid instruction
@@ -103,20 +114,9 @@ void AssemblyCompiler::parseAssemblyLine(std::string& str){
 
 }
 
-//creates a "code.bin" executable file
-void AssemblyCompiler::binFileInit(){
-
-	std::ofstream file("code.bin", std::ios::binary);
-	for(decltype(bincode.size()) i=0; i<bincode.size();i++){
-		file.write((char*)&bincode[i],sizeof(uint8_t));
-	}
-
-	file.close();
-}
 
 
-//////////////////////////////////////////////////////////////////////////////////////
-
+/*****************************************************************************************/
 //Additional functions for helping parsing 
 
 //Get the first word in the line
@@ -209,12 +209,13 @@ void AssemblyCompiler::checkDestination(Instruction& instr, std::string& dest){
 		}
 	}
 }
-///////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************/
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////////
+
+/*******************************************************************************************/
 
 //Parsing functions for different types of instructions
 
@@ -389,8 +390,12 @@ void AssemblyCompiler::addBinaryCode(Instruction& instr){
 	bincode.push_back(instr.Result);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************************************************************/
 
+
+
+/*******************************************************************************************/
+//check the type of instruction
 
 bool AssemblyCompiler::isLabel(std::string&str){
 	//Label definations end with ':'
@@ -471,8 +476,9 @@ bool AssemblyCompiler::isMov(std::string&str){
 	}
 	
 }
+/*******************************************************************************************/
 
-///////////////////////////////////////////////////////////////////////////////
+
 
 void AssemblyCompiler::removeExtraWhitespaces(std::string&str){
 	std::string output;
@@ -491,5 +497,3 @@ bool isInt(std::string&str){
 
     return std::regex_match(str,int_re) ;
 }
-
-/////////////////////////////////////////////////////////////////////////////////
