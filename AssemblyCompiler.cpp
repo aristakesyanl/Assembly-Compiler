@@ -2,6 +2,9 @@
 #include<regex>
 #include<cctype>
 #include<utility>
+#include<iostream>
+#include<fstream>
+#include<cstring>
 #include"AssemblyCompiler.h"
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
@@ -100,8 +103,16 @@ void AssemblyCompiler::parseAssemblyLine(std::string& str){
 
 }
 
+//creates a "code.bin" executable file
+void AssemblyCompiler::binFileInit(){
 
+	std::ofstream file("code.bin", std::ios::binary);
+	for(decltype(bincode.size()) i=0; i<bincode.size();i++){
+		file.write((char*)&bincode[i],sizeof(uint8_t));
+	}
 
+	file.close();
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -379,11 +390,6 @@ void AssemblyCompiler::addBinaryCode(Instruction& instr){
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
 
 
 bool AssemblyCompiler::isLabel(std::string&str){
