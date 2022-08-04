@@ -9,7 +9,7 @@
 using namespace std;
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
-	std::ifstream in(fileName);
+    std::ifstream in(fileName);
     std::string line;
     std::vector<std::string> lines;
 
