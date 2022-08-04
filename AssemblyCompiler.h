@@ -49,7 +49,8 @@ public:
 	const uint8_t Out=7;
 
 	AssemblyCompiler(std::string&);
-	
+	int binFileInit();
+
 private:
 	//Operand Values
 	std::map<std::string, uint8_t> Operands={
@@ -121,8 +122,8 @@ private:
 	bool isConditional(std::string&);
 
 	//Functions that help parsing Instruction components
-    	std::string getFirstWord(std::string&); //get the first word of instruction
-    	void checkArgument1(Instruction&, std::string&); //parse the first argument
+    std::string getFirstWord(std::string&); //get the first word of instruction
+    void checkArgument1(Instruction&, std::string&); //parse the first argument
 	void checkArgument2(Instruction&, std::string&); //parse the second argument
 	void checkDestination(Instruction&, std::string&); //parse destination
 	void addBinaryCode(Instruction&);
