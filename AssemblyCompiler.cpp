@@ -9,7 +9,7 @@
 using namespace std;
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
-	std::ifstream in(fileName);
+    std::ifstream in(fileName);
     std::string line;
     std::vector<std::string> lines;
 
@@ -414,7 +414,7 @@ void AssemblyCompiler::checkArgument1(Instruction& instr, std::string& arg1){
                 instr.Operand|=0x80;
             }
             else{
-                throw std::invalid_argument("Invalid Immediate value arg1");
+                throw std::invalid_argument("Invalid Immediate value");
             }
         }
     }
@@ -452,7 +452,7 @@ void AssemblyCompiler::checkArgument2(Instruction& instr, std::string& arg2){
                 instr.Operand|=0x40;
             }
             else{
-                throw std::invalid_argument("Invalid Immediate value arg2");
+                throw std::invalid_argument("Invalid Immediate value");
             }
         }
     }
@@ -474,17 +474,17 @@ void AssemblyCompiler::checkDestination(Instruction& instr, std::string& dest){
         std::transform(dest.begin(),dest.end(),dest.begin(),::toupper); //assembly is case-insensitive
         if((int)dest.size()<4){
             if(dest[1]<'0' || dest[1]>'5'){
-                throw std::invalid_argument("Invalid Register2");
+                throw std::invalid_argument("Invalid Register");
             }
             else if((int)dest.size()==3 && dest[2]!=' '){
-                throw std::invalid_argument("Invalid Register3");
+                throw std::invalid_argument("Invalid Register");
             }
             else{
                 instr.Result=dest[1]-'0';
             }
         }
         else{
-            throw std::invalid_argument("Invalid Register4");
+            throw std::invalid_argument("Invalid Register");
         }
 
     }
