@@ -1,0 +1,15 @@
+      jump:
+      SUB    r0 , 56,    r4
+      a equ 124
+
+
+      mov R5, 56
+
+      jG a, R2, kljh
+
+
+      b equ 33
+
+     fff: ADD 23, b, R0
+      
+
