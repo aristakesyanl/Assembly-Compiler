@@ -5,7 +5,7 @@
 #include<iostream>
 #include<fstream>
 #include<cstring>
-#include"compiler.h"
+#include"AssemblyCompiler.h"
 using namespace std;
 
 AssemblyCompiler::AssemblyCompiler(std::string& fileName){
@@ -523,7 +523,7 @@ void AssemblyCompiler::addBinaryCode(Instruction& instr){
 //does not accept leading zeros
 bool AssemblyCompiler::isInt(std::string&str){
 
-    constexpr auto max_digits=std::numeric_limits<int>::digits10 ;
+    constexpr auto max_digits=100;
     const std::string ub=std::to_string(max_digits-1) ;
     const std::regex int_re("^\\s*([+-]?[1-9]\\d{0,"+ub+"}|0)\\s*$");
 
