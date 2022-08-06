@@ -5,7 +5,7 @@
 
       mov R5, 56
 
-      jG a, R2, kljh
+      jG a, R2, fff
 
 
       b equ 33
